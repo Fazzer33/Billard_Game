@@ -59,6 +59,7 @@ public enum Ball {
         this.c = c;
         this.solid = solid;
 
+        System.out.println(c);
         this.body = new Body();
         this.body.addFixture(
                 Geometry.createCircle(Constants.RADIUS),
@@ -72,6 +73,11 @@ public enum Ball {
         this.body.setAngularDamping(Constants.ANGULAR_DAMPING);
 
         this.body.setUserData(this);
+
+        if(c.equals(Color.WHITE)) {
+
+            this.body.setLinearVelocity(1, 1);
+        }
     }
 
     public static class Constants {

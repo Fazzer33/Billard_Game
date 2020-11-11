@@ -11,12 +11,13 @@ import org.dyn4j.dynamics.contact.PersistedContactPoint;
 import org.dyn4j.dynamics.contact.SolvedContactPoint;
 
 public class PhysicsEngine implements StepListener, ContactListener, FrameListener {
+    private World world;
     private BallPocketedListener ballPocketedListener;
     private BallsCollisionListener ballsCollisionListener;
     private ObjectsRestListener objectsRestListener;
 
     public PhysicsEngine() {
-        World world = new World();
+        world = new World();
         world.setGravity(World.ZERO_GRAVITY);
         world.addListener(this);
     }
@@ -25,6 +26,7 @@ public class PhysicsEngine implements StepListener, ContactListener, FrameListen
     // Contact wird bei collission aufgerufen
     @Override
     public void begin(Step step, World world) {
+
 
     }
 
@@ -46,7 +48,7 @@ public class PhysicsEngine implements StepListener, ContactListener, FrameListen
     // Frame Listener
     @Override
     public void onFrame(double dt) {
-
+        world.update(dt);
     }
 
     // Contact Listener
@@ -91,5 +93,9 @@ public class PhysicsEngine implements StepListener, ContactListener, FrameListen
 
     public void addObjectsRestListener(ObjectsRestListener listener) {
         objectsRestListener = listener;
+    }
+
+    public World getWorld() {
+        return world;
     }
 }

@@ -62,7 +62,7 @@ public class Renderer extends AnimationTimer {
         this.sceneWidth = sceneWidth;
         this.sceneHeight = sceneHeight;
         
-        this.frameListener = Optional.empty();
+        this.frameListener = Optional.of(physicsEngine);
 
         //add the physics engine
         this.physicsEngine = physicsEngine;
@@ -102,6 +102,7 @@ public class Renderer extends AnimationTimer {
 
     public void addBall(Ball b) {
         this.balls.add(b);
+        physicsEngine.getWorld().addBody(b.getBody());
     }
 
     public void removeBall(Ball b) {
