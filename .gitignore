@@ -23,3 +23,14 @@
 hs_err_pid*
 /.gradle/
 /build/
+
+# IDE specific
+*/.idea/
+*/out/
+*.iml
+
+# Irrelevant files & folders
+*/META-INF/
+*/build/
+*/lib/
+*/node_modules/
