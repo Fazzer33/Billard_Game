@@ -1,6 +1,7 @@
 package at.fhv.sysarch.lab2.physics;
 
-import at.fhv.sysarch.lab2.game.Game;
+import at.fhv.sysarch.lab2.game.Ball;
+import at.fhv.sysarch.lab2.game.Table;
 import at.fhv.sysarch.lab2.rendering.FrameListener;
 import org.dyn4j.dynamics.Step;
 import org.dyn4j.dynamics.StepListener;
@@ -26,7 +27,6 @@ public class PhysicsEngine implements StepListener, ContactListener, FrameListen
     // Contact wird bei collission aufgerufen
     @Override
     public void begin(Step step, World world) {
-
 
     }
 
@@ -54,13 +54,26 @@ public class PhysicsEngine implements StepListener, ContactListener, FrameListen
     // Contact Listener
     @Override
     public void sensed(ContactPoint point) {
-
     }
 
     @Override
     public boolean begin(ContactPoint point) {
+        System.out.println("WhiteBall"+Ball.WHITE.getBody().getWorldCenter().x+"/"+Ball.WHITE.getBody().getWorldCenter().y);
+        Ball whiteBall = Ball.WHITE;
+        Ball oneBall = Ball.ONE;
 
-        return false;
+        if (point.getBody1().getUserData() instanceof Table.TablePart && point.getBody2().getUserData() instanceof Table.TablePart) {
+            Table.TablePart tablePart = (Table.TablePart) point.getBody1().getUserData();
+            // überprüfen was was ist
+
+            if (tablePart.equals(Table.TablePart.POCKET)) {
+                ballPocketedListener.onBallPocketed(whiteBall);
+            }
+        }
+        point.getBody1().getFixture(point.getPoint());
+//        ballsCollisionListener.onBallsCollide(whiteBall, oneBall);
+
+        return true;
     }
 
     @Override
@@ -70,12 +83,12 @@ public class PhysicsEngine implements StepListener, ContactListener, FrameListen
 
     @Override
     public boolean persist(PersistedContactPoint point) {
-        return false;
+        return true;
     }
 
     @Override
     public boolean preSolve(ContactPoint point) {
-        return false;
+        return true;
     }
 
     @Override

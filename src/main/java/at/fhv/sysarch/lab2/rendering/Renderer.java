@@ -107,10 +107,12 @@ public class Renderer extends AnimationTimer {
 
     public void removeBall(Ball b) {
         this.balls.remove(b);
+        physicsEngine.getWorld().removeBody(b.getBody());
     }
     
     public void setTable(Table t) {
         this.table = t;
+        physicsEngine.getWorld().addBody(t.getBody());
     }
 
     public void setFrameListener(FrameListener l) {

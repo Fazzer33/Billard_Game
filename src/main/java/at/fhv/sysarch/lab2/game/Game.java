@@ -9,6 +9,10 @@ import at.fhv.sysarch.lab2.physics.BallsCollisionListener;
 import at.fhv.sysarch.lab2.physics.ObjectsRestListener;
 import at.fhv.sysarch.lab2.rendering.Renderer;
 import javafx.scene.input.MouseEvent;
+import org.dyn4j.dynamics.BodyFixture;
+import org.dyn4j.dynamics.World;
+import org.dyn4j.geometry.Circle;
+import org.dyn4j.geometry.Polygon;
 
 public class Game implements BallPocketedListener, BallsCollisionListener, ObjectsRestListener {
     private final Renderer renderer;
@@ -27,6 +31,8 @@ public class Game implements BallPocketedListener, BallsCollisionListener, Objec
     }
 
     public void onMouseReleased(MouseEvent e) {
+        System.out.println(this.renderer.screenToPhysicsX(e.getX()));
+        System.out.println(this.renderer.screenToPhysicsX(e.getY()));
     }
 
     public void setOnMouseDragged(MouseEvent e) {
@@ -54,6 +60,7 @@ public class Game implements BallPocketedListener, BallsCollisionListener, Objec
 
             b.setPosition(x, y);
             b.getBody().setLinearVelocity(0, 0);
+
             renderer.addBall(b);
 
             row++;
@@ -88,12 +95,18 @@ public class Game implements BallPocketedListener, BallsCollisionListener, Objec
 
     @Override
     public boolean onBallPocketed(Ball b) {
-        return false;
+
+        renderer.removeBall(b);
+
+        return true;
     }
 
     @Override
     public void onBallsCollide(Ball b1, Ball b2) {
-
+        if (b1.getBody().getWorldCenter().x == b2.getBody().getWorldCenter().x &&
+                b1.getBody().getWorldCenter().y == b2.getBody().getWorldCenter().y) {
+            System.out.println("Collision");
+        }
     }
 
     @Override

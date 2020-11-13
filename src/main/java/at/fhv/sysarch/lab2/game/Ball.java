@@ -59,7 +59,6 @@ public enum Ball {
         this.c = c;
         this.solid = solid;
 
-        System.out.println(c);
         this.body = new Body();
         this.body.addFixture(
                 Geometry.createCircle(Constants.RADIUS),
@@ -76,7 +75,7 @@ public enum Ball {
 
         if(c.equals(Color.WHITE)) {
 
-            this.body.setLinearVelocity(1, 1);
+            this.body.setLinearVelocity(3, 0);
         }
     }
 
