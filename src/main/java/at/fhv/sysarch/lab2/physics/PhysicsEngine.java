@@ -58,20 +58,29 @@ public class PhysicsEngine implements StepListener, ContactListener, FrameListen
 
     @Override
     public boolean begin(ContactPoint point) {
-        System.out.println("WhiteBall"+Ball.WHITE.getBody().getWorldCenter().x+"/"+Ball.WHITE.getBody().getWorldCenter().y);
-        Ball whiteBall = Ball.WHITE;
-        Ball oneBall = Ball.ONE;
+        if (point.getBody1().getUserData() instanceof Ball && point.getBody2().getUserData() instanceof Ball) {
+            Ball ball1 = (Ball) point.getBody1().getUserData();
+            Ball ball2 = (Ball) point.getBody2().getUserData();
+            ballsCollisionListener.onBallsCollide(ball1, ball2);
+        } else {
+            Ball ball1;
+            Table.TablePart tablePart;
 
-        if (point.getBody1().getUserData() instanceof Table.TablePart && point.getBody2().getUserData() instanceof Table.TablePart) {
-            Table.TablePart tablePart = (Table.TablePart) point.getBody1().getUserData();
-            // überprüfen was was ist
+            if (point.getBody1().getUserData() instanceof Ball) {
+                ball1 = (Ball) point.getBody1().getUserData();
+                tablePart = (Table.TablePart) point.getFixture2().getUserData();
+            } else {
+                ball1 = (Ball) point.getBody2().getUserData();
+                tablePart = (Table.TablePart) point.getFixture1().getUserData();
 
+            }
+            System.out.println(ball1);
+            System.out.println(tablePart);
             if (tablePart.equals(Table.TablePart.POCKET)) {
-                ballPocketedListener.onBallPocketed(whiteBall);
+                ballPocketedListener.onBallPocketed(ball1);
+                System.out.println("collision with pocket");
             }
         }
-        point.getBody1().getFixture(point.getPoint());
-//        ballsCollisionListener.onBallsCollide(whiteBall, oneBall);
 
         return true;
     }
