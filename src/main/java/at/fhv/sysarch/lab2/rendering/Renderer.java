@@ -5,6 +5,10 @@ import java.util.List;
 import java.util.Optional;
 
 import at.fhv.sysarch.lab2.physics.PhysicsEngine;
+import javafx.scene.Scene;
+import javafx.scene.layout.Pane;
+import javafx.scene.shape.Line;
+import javafx.scene.transform.Rotate;
 import org.dyn4j.dynamics.BodyFixture;
 import org.dyn4j.geometry.Circle;
 import org.dyn4j.geometry.Polygon;
@@ -238,6 +242,30 @@ public class Renderer extends AnimationTimer {
 
     private void drawCue() {
         // TODO: draw cue
+        javafx.scene.shape.Circle cue = new javafx.scene.shape.Circle(300);
+        cue.setFill(Color.WHITE);
+        cue.setStroke(Color.BLACK);
+
+        Line stick = new Line(cue.getCenterX() + (cue.getRadius() + 5), cue.getCenterY(), cue.getCenterX() + (cue.getRadius() + 5 + 75), cue.getCenterY());
+        stick.setStrokeWidth(3);
+        stick.setFill(Color.BROWN);
+        Rotate rotate = new Rotate(45);
+        rotate.pivotXProperty().bind(cue.centerXProperty());
+        rotate.pivotYProperty().bind(cue.centerYProperty());
+        stick.getTransforms().add(rotate);
+
+        Pane root = new Pane(cue, stick);
+        root.setStyle("-fx-background-color: green");
+
+        Scene scene = new Scene(root, 300, 250);
+        scene.setOnMouseMoved((event) -> {
+            double newX = event.getSceneX();
+            double newY = event.getSceneY();
+
+            System.out.println(Math.toDegrees(Math.atan2(newY - cue.getCenterY(), newX - cue.getCenterX())));
+            rotate.setAngle(Math.toDegrees(Math.atan2(newY - cue.getCenterY(), newX - cue.getCenterX())));
+        });
+
     }
 
     private void drawFPS(double dt) {

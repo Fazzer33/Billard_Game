@@ -75,7 +75,7 @@ public enum Ball {
 
         if(c.equals(Color.WHITE)) {
 
-            this.body.setLinearVelocity(-6, 0.4);
+            this.body.setLinearVelocity(-8, 0.9);
         }
     }
 

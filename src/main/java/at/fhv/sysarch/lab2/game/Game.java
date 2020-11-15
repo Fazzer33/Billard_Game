@@ -9,13 +9,13 @@ import at.fhv.sysarch.lab2.physics.BallsCollisionListener;
 import at.fhv.sysarch.lab2.physics.ObjectsRestListener;
 import at.fhv.sysarch.lab2.rendering.Renderer;
 import javafx.scene.input.MouseEvent;
-import org.dyn4j.dynamics.BodyFixture;
-import org.dyn4j.dynamics.World;
-import org.dyn4j.geometry.Circle;
-import org.dyn4j.geometry.Polygon;
 
 public class Game implements BallPocketedListener, BallsCollisionListener, ObjectsRestListener {
     private final Renderer renderer;
+    private boolean player1 = true;
+    private boolean player2 = false;
+    private int scorePlayer1 = 0;
+    private int scorePlayer2 = 0;
 
     public Game(Renderer renderer) {      
         this.renderer = renderer;
@@ -28,6 +28,9 @@ public class Game implements BallPocketedListener, BallsCollisionListener, Objec
 
         double pX = this.renderer.screenToPhysicsX(x);
         double pY = this.renderer.screenToPhysicsY(y);
+
+        System.out.println(pX);
+        System.out.println(pY);
     }
 
     public void onMouseReleased(MouseEvent e) {
@@ -41,6 +44,9 @@ public class Game implements BallPocketedListener, BallsCollisionListener, Objec
 
         double pX = renderer.screenToPhysicsX(x);
         double pY = renderer.screenToPhysicsY(y);
+
+//        System.out.println(pX);
+//        System.out.println(pY);
     }
 
     private void placeBalls(List<Ball> balls) {
@@ -91,31 +97,43 @@ public class Game implements BallPocketedListener, BallsCollisionListener, Objec
         
         Table table = new Table();
         renderer.setTable(table);
+
+        renderer.setStrikeMessage("Player 1s turn");
     }
 
+    // BallPocketedListener
     @Override
     public boolean onBallPocketed(Ball b) {
 
         renderer.removeBall(b);
+        if (player1) {
+            scorePlayer1++;
+            renderer.setPlayer1Score(scorePlayer1);
+        }
+
+        if (player2) {
+            scorePlayer2++;
+            renderer.setPlayer2Score(scorePlayer2);
+        }
 
         return true;
     }
 
+    // BallsCollisionListener
     @Override
     public void onBallsCollide(Ball b1, Ball b2) {
-        if (b1.getBody().getWorldCenter().x == b2.getBody().getWorldCenter().x &&
-                b1.getBody().getWorldCenter().y == b2.getBody().getWorldCenter().y) {
-            System.out.println("Collision");
-        }
+        System.out.println(b1+ " collided with "+b2);
     }
 
+    // ObjectRestListener
     @Override
     public void onEndAllObjectsRest() {
+        System.out.println("TESTSETSETET");
 
     }
 
     @Override
     public void onStartAllObjectsRest() {
-
+        System.out.println("TESTSETSETET");
     }
 }
