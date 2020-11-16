@@ -44,6 +44,9 @@ public class PhysicsEngine implements StepListener, ContactListener, FrameListen
     @Override
     public void end(Step step, World world) {
 
+        // alle bodies von der world holen und überprüfen ob sie sich noch bewegen
+
+
     }
 
     // Frame Listener
@@ -63,24 +66,6 @@ public class PhysicsEngine implements StepListener, ContactListener, FrameListen
             Ball ball1 = (Ball) point.getBody1().getUserData();
             Ball ball2 = (Ball) point.getBody2().getUserData();
             ballsCollisionListener.onBallsCollide(ball1, ball2);
-        } else {
-            Ball ball1;
-            Table.TablePart tablePart;
-
-            if (point.getBody1().getUserData() instanceof Ball) {
-                ball1 = (Ball) point.getBody1().getUserData();
-                tablePart = (Table.TablePart) point.getFixture2().getUserData();
-            } else {
-                ball1 = (Ball) point.getBody2().getUserData();
-                tablePart = (Table.TablePart) point.getFixture1().getUserData();
-
-            }
-            System.out.println(ball1);
-            System.out.println(tablePart);
-            if (tablePart.equals(Table.TablePart.POCKET)) {
-                ballPocketedListener.onBallPocketed(ball1);
-                System.out.println("collision with pocket");
-            }
         }
 
         return true;
@@ -89,10 +74,24 @@ public class PhysicsEngine implements StepListener, ContactListener, FrameListen
     @Override
     public void end(ContactPoint point) {
 
+
     }
 
     @Override
     public boolean persist(PersistedContactPoint point) {
+
+        if ((point.getBody1().getUserData() instanceof Ball && point.getFixture2().getUserData() == Table.TablePart.POCKET)) {
+            Ball ball1;
+            ball1 = (Ball) point.getBody1().getUserData();
+
+            double deltaX = getDelta(ball1.getBody().getWorldCenter().x, point.getFixture2().getShape().getCenter().x);
+            double deltaY = getDelta(ball1.getBody().getWorldCenter().y, point.getFixture2().getShape().getCenter().y);
+
+            if (deltaX < point.getFixture2().getShape().getRadius() - 0.02 && deltaY < point.getFixture2().getShape().getRadius() - 0.02) {
+                ballPocketedListener.onBallPocketed(ball1);
+                return true;
+            }
+        }
         return true;
     }
 
@@ -120,5 +119,13 @@ public class PhysicsEngine implements StepListener, ContactListener, FrameListen
 
     public World getWorld() {
         return world;
+    }
+
+    public double getDelta(double num1, double num2) {
+        if (num1 < num2) {
+            return Math.abs(num2 - num1);
+        } else {
+            return Math.abs(num1 - num2);
+        }
     }
 }

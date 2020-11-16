@@ -128,12 +128,11 @@ public class Game implements BallPocketedListener, BallsCollisionListener, Objec
     // ObjectRestListener
     @Override
     public void onEndAllObjectsRest() {
-        System.out.println("TESTSETSETET");
 
     }
 
     @Override
     public void onStartAllObjectsRest() {
-        System.out.println("TESTSETSETET");
+
     }
 }
