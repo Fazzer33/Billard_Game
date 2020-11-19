@@ -12,8 +12,8 @@ import javafx.scene.input.MouseEvent;
 
 public class Game implements BallPocketedListener, BallsCollisionListener, ObjectsRestListener {
     private final Renderer renderer;
-    private boolean player1 = true;
-    private boolean player2 = false;
+    // player1 - 0, player 2 - 1
+    private int player = 0;
     private int scorePlayer1 = 0;
     private int scorePlayer2 = 0;
 
@@ -106,12 +106,12 @@ public class Game implements BallPocketedListener, BallsCollisionListener, Objec
     public boolean onBallPocketed(Ball b) {
 
         renderer.removeBall(b);
-        if (player1) {
+        if (player == 0) {
             scorePlayer1++;
             renderer.setPlayer1Score(scorePlayer1);
         }
 
-        if (player2) {
+        if (player == 1) {
             scorePlayer2++;
             renderer.setPlayer2Score(scorePlayer2);
         }
@@ -128,7 +128,11 @@ public class Game implements BallPocketedListener, BallsCollisionListener, Objec
     // ObjectRestListener
     @Override
     public void onEndAllObjectsRest() {
-
+        if (player == 0) {
+            renderer.setStrikeMessage("Player 2s turn");
+        } else if (player == 1) {
+            renderer.setStrikeMessage("Player 1s turn");
+        }
     }
 
     @Override

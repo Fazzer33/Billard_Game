@@ -3,6 +3,7 @@ package at.fhv.sysarch.lab2.physics;
 import at.fhv.sysarch.lab2.game.Ball;
 import at.fhv.sysarch.lab2.game.Table;
 import at.fhv.sysarch.lab2.rendering.FrameListener;
+import org.dyn4j.dynamics.Body;
 import org.dyn4j.dynamics.Step;
 import org.dyn4j.dynamics.StepListener;
 import org.dyn4j.dynamics.World;
@@ -27,6 +28,10 @@ public class PhysicsEngine implements StepListener, ContactListener, FrameListen
     // Contact wird bei collission aufgerufen
     @Override
     public void begin(Step step, World world) {
+        System.out.println(checkVelocityOnAll());
+        if (checkVelocityOnAll()) {
+            objectsRestListener.onEndAllObjectsRest();
+        }
 
     }
 
@@ -127,5 +132,15 @@ public class PhysicsEngine implements StepListener, ContactListener, FrameListen
         } else {
             return Math.abs(num1 - num2);
         }
+    }
+
+    public boolean checkVelocityOnAll() {
+        boolean rest = true;
+        for (Body body : this.world.getBodies()) {
+            if (body.getLinearVelocity().x != 0 && body.getLinearVelocity().y != 0) {
+                rest = false;
+            }
+        }
+        return rest;
     }
 }
