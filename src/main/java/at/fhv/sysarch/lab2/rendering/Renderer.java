@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import at.fhv.sysarch.lab2.game.Cue;
 import at.fhv.sysarch.lab2.physics.PhysicsEngine;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
@@ -28,6 +29,7 @@ public class Renderer extends AnimationTimer {
     private long lastUpdate;
     private List<Ball> balls;
     private Table table;
+    private Cue cue;
 
     private final GraphicsContext gc;
 
@@ -117,6 +119,10 @@ public class Renderer extends AnimationTimer {
     public void setTable(Table t) {
         this.table = t;
         physicsEngine.getWorld().addBody(t.getBody());
+    }
+
+    public void setCue(Cue c) {
+        this.cue = c;
     }
 
     public void setFrameListener(FrameListener l) {
@@ -242,30 +248,38 @@ public class Renderer extends AnimationTimer {
 
     private void drawCue() {
         // TODO: draw cue
-        javafx.scene.shape.Circle cue = new javafx.scene.shape.Circle(300);
-        cue.setFill(Color.WHITE);
-        cue.setStroke(Color.BLACK);
+//        javafx.scene.shape.Circle cue = new javafx.scene.shape.Circle(300);
+//        cue.setFill(Color.WHITE);
+//        cue.setStroke(Color.BLACK);
+//
+//        Line stick = new Line(cue.getCenterX() + (cue.getRadius() + 5), cue.getCenterY(), cue.getCenterX() + (cue.getRadius() + 5 + 75), cue.getCenterY());
+//        stick.setStrokeWidth(3);
+//        stick.setFill(Color.BROWN);
+//        Rotate rotate = new Rotate(45);
+//        rotate.pivotXProperty().bind(cue.centerXProperty());
+//        rotate.pivotYProperty().bind(cue.centerYProperty());
+//        stick.getTransforms().add(rotate);
+//
+//        Pane root = new Pane(cue, stick);
+//        root.setStyle("-fx-background-color: green");
+//
+//        Scene scene = new Scene(root, 300, 250);
+//        scene.setOnMouseMoved((event) -> {
+//            double newX = event.getSceneX();
+//            double newY = event.getSceneY();
+//
+//            System.out.println(Math.toDegrees(Math.atan2(newY - cue.getCenterY(), newX - cue.getCenterX())));
+//            rotate.setAngle(Math.toDegrees(Math.atan2(newY - cue.getCenterY(), newX - cue.getCenterX())));
+//        });
 
-        Line stick = new Line(cue.getCenterX() + (cue.getRadius() + 5), cue.getCenterY(), cue.getCenterX() + (cue.getRadius() + 5 + 75), cue.getCenterY());
-        stick.setStrokeWidth(3);
-        stick.setFill(Color.BROWN);
-        Rotate rotate = new Rotate(45);
-        rotate.pivotXProperty().bind(cue.centerXProperty());
-        rotate.pivotYProperty().bind(cue.centerYProperty());
-        stick.getTransforms().add(rotate);
 
-        Pane root = new Pane(cue, stick);
-        root.setStyle("-fx-background-color: green");
-
-        Scene scene = new Scene(root, 300, 250);
-        scene.setOnMouseMoved((event) -> {
-            double newX = event.getSceneX();
-            double newY = event.getSceneY();
-
-            System.out.println(Math.toDegrees(Math.atan2(newY - cue.getCenterY(), newX - cue.getCenterX())));
-            rotate.setAngle(Math.toDegrees(Math.atan2(newY - cue.getCenterY(), newX - cue.getCenterX())));
-        });
-
+        if(cue.cueIsDragged()) {
+            this.gc.setStroke(Color.BLACK);
+            this.gc.setLineWidth(7);
+            this.gc.setTransform(this.poolCoords);
+            this.gc.strokeLine(cue.getStartX()*SCALE, cue.getStartY()*SCALE,
+                    cue.getEndX()*SCALE, cue.getEndY()*SCALE);
+        }
     }
 
     private void drawFPS(double dt) {

@@ -17,6 +17,8 @@ public class Game implements BallPocketedListener, BallsCollisionListener, Objec
     private int scorePlayer1 = 0;
     private int scorePlayer2 = 0;
 
+    private Cue cue;
+
     public Game(Renderer renderer) {      
         this.renderer = renderer;
         this.initWorld();
@@ -29,24 +31,37 @@ public class Game implements BallPocketedListener, BallsCollisionListener, Objec
         double pX = this.renderer.screenToPhysicsX(x);
         double pY = this.renderer.screenToPhysicsY(y);
 
-        System.out.println(pX);
-        System.out.println(pY);
+//        System.out.println(pX);
+//        System.out.println(pY);
+
+        cue.setStartX(pX);
+        cue.setStartY(pY);
+        cue.setEndY(pY);
+        cue.setEndX(pX);
+        cue.setIsDragged();
     }
 
     public void onMouseReleased(MouseEvent e) {
-        System.out.println(this.renderer.screenToPhysicsX(e.getX()));
-        System.out.println(this.renderer.screenToPhysicsX(e.getY()));
+//        System.out.println(this.renderer.screenToPhysicsX(e.getX()));
+//        System.out.println(this.renderer.screenToPhysicsX(e.getY()));
+        double pX = this.renderer.screenToPhysicsX(e.getX());
+        double pY = this.renderer.screenToPhysicsX(e.getY());
+        cue.setIsDragged();
     }
 
     public void setOnMouseDragged(MouseEvent e) {
         double x = e.getX();
         double y = e.getY();
 
+
         double pX = renderer.screenToPhysicsX(x);
         double pY = renderer.screenToPhysicsY(y);
 
-//        System.out.println(pX);
-//        System.out.println(pY);
+        System.out.println(pX);
+        System.out.println(pY);
+
+        cue.setEndX(pX);
+        cue.setEndY(pY);
     }
 
     private void placeBalls(List<Ball> balls) {
@@ -96,7 +111,9 @@ public class Game implements BallPocketedListener, BallsCollisionListener, Objec
         renderer.addBall(Ball.WHITE);
         
         Table table = new Table();
+        cue = new Cue();
         renderer.setTable(table);
+        renderer.setCue(cue);
 
         renderer.setStrikeMessage("Player 1s turn");
     }

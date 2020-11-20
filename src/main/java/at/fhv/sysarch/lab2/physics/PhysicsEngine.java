@@ -28,7 +28,6 @@ public class PhysicsEngine implements StepListener, ContactListener, FrameListen
     // Contact wird bei collission aufgerufen
     @Override
     public void begin(Step step, World world) {
-        System.out.println(checkVelocityOnAll());
         if (checkVelocityOnAll()) {
             objectsRestListener.onEndAllObjectsRest();
         }
