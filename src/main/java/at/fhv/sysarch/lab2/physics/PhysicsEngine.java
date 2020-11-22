@@ -90,9 +90,11 @@ public class PhysicsEngine implements StepListener, ContactListener, FrameListen
     @Override
     public boolean persist(PersistedContactPoint point) {
 
-        if ((point.getBody1().getUserData() instanceof Ball && point.getFixture2().getUserData() == Table.TablePart.POCKET)) {
+        if ((point.getBody1().getUserData() instanceof Ball && point.getFixture2().getUserData() == Table.TablePart.POCKET ||
+                point.getFixture1().getUserData() == Table.TablePart.POCKET && point.getBody2().getUserData() instanceof Ball)) {
             Ball ball1;
             ball1 = (Ball) point.getBody1().getUserData();
+            System.out.println("collide with pocket");
 
             double deltaX = getDelta(ball1.getBody().getWorldCenter().x, point.getFixture2().getShape().getCenter().x);
             double deltaY = getDelta(ball1.getBody().getWorldCenter().y, point.getFixture2().getShape().getCenter().y);
