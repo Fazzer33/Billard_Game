@@ -28,10 +28,11 @@ public class Main extends Application {
                 SCENE_HEIGHT,
                 physicsEngine);
         
-        Game game = new Game(renderer);
+        Game game = new Game(renderer, physicsEngine);
 
         physicsEngine.addBallPocketedListener(game);
         physicsEngine.addBallsCollisionListener(game);
+        physicsEngine.addBallStrikeListener(game);
         physicsEngine.addObjectsRestListener(game);
 
         c.setOnMousePressed(game::onMousePressed);

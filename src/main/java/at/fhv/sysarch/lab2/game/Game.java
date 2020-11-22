@@ -7,11 +7,13 @@ import java.util.List;
 import at.fhv.sysarch.lab2.physics.BallPocketedListener;
 import at.fhv.sysarch.lab2.physics.BallsCollisionListener;
 import at.fhv.sysarch.lab2.physics.ObjectsRestListener;
+import at.fhv.sysarch.lab2.physics.PhysicsEngine;
 import at.fhv.sysarch.lab2.rendering.Renderer;
 import javafx.scene.input.MouseEvent;
 
-public class Game implements BallPocketedListener, BallsCollisionListener, ObjectsRestListener {
+public class Game implements BallPocketedListener, BallsCollisionListener, BallStrikeListener, ObjectsRestListener {
     private final Renderer renderer;
+    private final PhysicsEngine physicsEngine;
     // player1 - 0, player 2 - 1
     private int player = 0;
     private int scorePlayer1 = 0;
@@ -19,8 +21,9 @@ public class Game implements BallPocketedListener, BallsCollisionListener, Objec
 
     private Cue cue;
 
-    public Game(Renderer renderer) {      
+    public Game(Renderer renderer, PhysicsEngine physicsEngine) {
         this.renderer = renderer;
+        this.physicsEngine = physicsEngine;
         this.initWorld();
     }
 
@@ -42,11 +45,8 @@ public class Game implements BallPocketedListener, BallsCollisionListener, Objec
     }
 
     public void onMouseReleased(MouseEvent e) {
-//        System.out.println(this.renderer.screenToPhysicsX(e.getX()));
-//        System.out.println(this.renderer.screenToPhysicsX(e.getY()));
-        double pX = this.renderer.screenToPhysicsX(e.getX());
-        double pY = this.renderer.screenToPhysicsX(e.getY());
         cue.setIsDragged();
+        physicsEngine.rayCast();
     }
 
     public void setOnMouseDragged(MouseEvent e) {
@@ -140,6 +140,12 @@ public class Game implements BallPocketedListener, BallsCollisionListener, Objec
     @Override
     public void onBallsCollide(Ball b1, Ball b2) {
         System.out.println(b1+ " collided with "+b2);
+    }
+
+    // BallStrikeListener
+    @Override
+    public void onBallStrike(Ball b) {
+
     }
 
     // ObjectRestListener

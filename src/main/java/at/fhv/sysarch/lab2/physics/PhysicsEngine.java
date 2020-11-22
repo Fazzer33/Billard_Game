@@ -1,36 +1,42 @@
 package at.fhv.sysarch.lab2.physics;
 
 import at.fhv.sysarch.lab2.game.Ball;
+import at.fhv.sysarch.lab2.game.BallStrikeListener;
+import at.fhv.sysarch.lab2.game.Cue;
 import at.fhv.sysarch.lab2.game.Table;
 import at.fhv.sysarch.lab2.rendering.FrameListener;
-import org.dyn4j.dynamics.Body;
-import org.dyn4j.dynamics.Step;
-import org.dyn4j.dynamics.StepListener;
-import org.dyn4j.dynamics.World;
+import org.dyn4j.dynamics.*;
 import org.dyn4j.dynamics.contact.ContactListener;
 import org.dyn4j.dynamics.contact.ContactPoint;
 import org.dyn4j.dynamics.contact.PersistedContactPoint;
 import org.dyn4j.dynamics.contact.SolvedContactPoint;
+import org.dyn4j.geometry.Ray;
+import org.dyn4j.geometry.Vector2;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Vector;
 
 public class PhysicsEngine implements StepListener, ContactListener, FrameListener {
     private World world;
+    private Cue cue;
     private BallPocketedListener ballPocketedListener;
     private BallsCollisionListener ballsCollisionListener;
+    private BallStrikeListener ballStrikeListener;
     private ObjectsRestListener objectsRestListener;
 
     public PhysicsEngine() {
         world = new World();
         world.setGravity(World.ZERO_GRAVITY);
         world.addListener(this);
+
     }
 
     // Step Listener wird bei jedem Frame aufgerufen
     // Contact wird bei collission aufgerufen
     @Override
     public void begin(Step step, World world) {
-        if (checkVelocityOnAll()) {
-            objectsRestListener.onEndAllObjectsRest();
-        }
+
 
     }
 
@@ -47,10 +53,10 @@ public class PhysicsEngine implements StepListener, ContactListener, FrameListen
 
     @Override
     public void end(Step step, World world) {
-
         // alle bodies von der world holen und überprüfen ob sie sich noch bewegen
-
-
+        if (checkVelocityOnAll()) {
+            objectsRestListener.onEndAllObjectsRest();
+        }
     }
 
     // Frame Listener
@@ -95,6 +101,7 @@ public class PhysicsEngine implements StepListener, ContactListener, FrameListen
                 ballPocketedListener.onBallPocketed(ball1);
                 return true;
             }
+
         }
         return true;
     }
@@ -115,6 +122,10 @@ public class PhysicsEngine implements StepListener, ContactListener, FrameListen
 
     public void addBallsCollisionListener(BallsCollisionListener listener) {
         ballsCollisionListener = listener;
+    }
+
+    public void addBallStrikeListener(BallStrikeListener listener) {
+        ballStrikeListener = listener;
     }
 
     public void addObjectsRestListener(ObjectsRestListener listener) {
@@ -141,5 +152,26 @@ public class PhysicsEngine implements StepListener, ContactListener, FrameListen
             }
         }
         return rest;
+    }
+
+    public void addCue(Cue cue) {
+        this.cue = cue;
+    }
+
+    public void rayCast() {
+        List<RaycastResult> raycastResults = new LinkedList<>();
+        Ray ray = new Ray(new Vector2(cue.getStartX(), cue.getStartY()),
+                new Vector2(cue.getStartX() - cue.getEndX(), cue.getStartY() - cue.getEndY()));
+        world.raycast(ray, 0.05, true, false, raycastResults);
+        if(raycastResults.size() == 1){
+            RaycastResult result = raycastResults.get(0);
+            if(result.getBody().getUserData() instanceof Ball) {
+                Ball ball = (Ball) result.getBody().getUserData();
+                Vector2 strikePoint = result.getRaycast().getPoint();
+                Vector2 force = new Vector2(cue.getStartX() - cue.getEndX(), cue.getStartY() - cue.getEndY());
+                ball.getBody().applyForce(new Vector2(force.x*420, force.y*420), strikePoint);
+            }
+        }
+
     }
 }

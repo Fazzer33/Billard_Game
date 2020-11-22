@@ -45,12 +45,6 @@ public class Cue {
 
     public void setIsDragged(){
         dragged = !dragged;
-        if (dragged == false) {
-            startX = 0;
-            startY = 0;
-            endX = 0;
-            endY = 0;
-        }
     }
 
 }
