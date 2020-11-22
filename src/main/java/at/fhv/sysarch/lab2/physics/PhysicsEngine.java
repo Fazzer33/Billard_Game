@@ -170,6 +170,7 @@ public class PhysicsEngine implements StepListener, ContactListener, FrameListen
                 Vector2 strikePoint = result.getRaycast().getPoint();
                 Vector2 force = new Vector2(cue.getStartX() - cue.getEndX(), cue.getStartY() - cue.getEndY());
                 ball.getBody().applyForce(new Vector2(force.x*420, force.y*420), strikePoint);
+                ballStrikeListener.onBallStrike(ball);
             }
         }
 

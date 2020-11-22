@@ -10,11 +10,12 @@ import at.fhv.sysarch.lab2.physics.ObjectsRestListener;
 import at.fhv.sysarch.lab2.physics.PhysicsEngine;
 import at.fhv.sysarch.lab2.rendering.Renderer;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Color;
 
 public class Game implements BallPocketedListener, BallsCollisionListener, BallStrikeListener, ObjectsRestListener {
     private final Renderer renderer;
     private final PhysicsEngine physicsEngine;
-    // player1 - 0, player 2 - 1
+    // starting state - 0, player1 - 1, player 2 - 2
     private int player = 0;
     private int scorePlayer1 = 0;
     private int scorePlayer2 = 0;
@@ -123,12 +124,12 @@ public class Game implements BallPocketedListener, BallsCollisionListener, BallS
     public boolean onBallPocketed(Ball b) {
 
         renderer.removeBall(b);
-        if (player == 0) {
+        if (player == 1) {
             scorePlayer1++;
             renderer.setPlayer1Score(scorePlayer1);
         }
 
-        if (player == 1) {
+        if (player == 2) {
             scorePlayer2++;
             renderer.setPlayer2Score(scorePlayer2);
         }
@@ -144,16 +145,30 @@ public class Game implements BallPocketedListener, BallsCollisionListener, BallS
 
     // BallStrikeListener
     @Override
-    public void onBallStrike(Ball b) {
-
+    public void onBallStrike(Ball ball) {
+        if(ball.getColor() != Color.WHITE) {
+            renderer.setFoulMessage("FOUL: Wrong ball hit!");
+        } else {
+            renderer.setFoulMessage("");
+        }
+        if (player == 0) {
+            player = 1;
+        }
+        else if (player == 1) {
+            player = 2;
+            renderer.setStrikeMessage("Player 2s turn");
+        } else if (player == 2) {
+            player = 1;
+            renderer.setStrikeMessage("Player 1s turn");
+        }
     }
 
     // ObjectRestListener
     @Override
     public void onEndAllObjectsRest() {
-        if (player == 0) {
+        if (player == 1) {
             renderer.setStrikeMessage("Player 2s turn");
-        } else if (player == 1) {
+        } else if (player == 0 || player == 2) {
             renderer.setStrikeMessage("Player 1s turn");
         }
     }

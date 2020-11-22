@@ -72,11 +72,6 @@ public enum Ball {
         this.body.setAngularDamping(Constants.ANGULAR_DAMPING);
 
         this.body.setUserData(this);
-
-        if(c.equals(Color.WHITE)) {
-
-            this.body.setLinearVelocity(-8, 0.9);
-        }
     }
 
     public static class Constants {
