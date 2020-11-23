@@ -22,12 +22,12 @@ public class PhysicsEngine implements StepListener, ContactListener, FrameListen
     private BallsCollisionListener ballsCollisionListener;
     private BallStrikeListener ballStrikeListener;
     private ObjectsRestListener objectsRestListener;
+    private List<Ball> balls = new LinkedList<>();
 
     public PhysicsEngine() {
         world = new World();
         world.setGravity(World.ZERO_GRAVITY);
         world.addListener(this);
-
     }
 
     // Step Listener wird bei jedem Frame aufgerufen
@@ -55,6 +55,10 @@ public class PhysicsEngine implements StepListener, ContactListener, FrameListen
         if (checkVelocityOnAll()) {
             objectsRestListener.onEndAllObjectsRest();
         }
+//        if (balls.size()<2){
+//            Ball ball = balls.get(0);
+//            System.out.println(ball.getColor());
+//        }
     }
 
     // Frame Listener
@@ -74,7 +78,6 @@ public class PhysicsEngine implements StepListener, ContactListener, FrameListen
         if (point.getBody1().getUserData() instanceof Ball && point.getBody2().getUserData() instanceof Ball) {
             Ball ball1 = (Ball) point.getBody1().getUserData();
             Ball ball2 = (Ball) point.getBody2().getUserData();
-
             ballsCollisionListener.onBallsCollide(ball1, ball2);
         }
 
@@ -83,7 +86,6 @@ public class PhysicsEngine implements StepListener, ContactListener, FrameListen
 
     @Override
     public void end(ContactPoint point) {
-
 
     }
 
@@ -185,5 +187,13 @@ public class PhysicsEngine implements StepListener, ContactListener, FrameListen
                 ballStrikeListener.onBallStrike(ball);
             }
         }
+    }
+
+    public void addBall(Ball b) {
+        balls.add(b);
+    }
+
+    public void removeBall(Ball b) {
+        balls.remove(b);
     }
 }

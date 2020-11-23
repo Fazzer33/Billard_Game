@@ -15,7 +15,9 @@ import javafx.scene.paint.Color;
 public class Game implements BallPocketedListener, BallsCollisionListener, BallStrikeListener, ObjectsRestListener {
     private final Renderer renderer;
     private final PhysicsEngine physicsEngine;
-    private boolean foul = true;
+    private boolean foul = false;
+    private boolean roundOver = true;
+    private boolean collisionDetected = false;
     // starting state - 0, player1 - 1, player 2 - 2
     private int player = 0;
     private int scoreCounter = 0;
@@ -65,6 +67,8 @@ public class Game implements BallPocketedListener, BallsCollisionListener, BallS
 
         cue.setEndX(pX);
         cue.setEndY(pY);
+        renderer.setActionMessage("");
+        renderer.setFoulMessage("");
     }
 
     private void placeBalls(List<Ball> balls) {
@@ -85,6 +89,7 @@ public class Game implements BallPocketedListener, BallsCollisionListener, BallS
             b.setPosition(x, y);
             b.getBody().setLinearVelocity(0, 0);
 
+            physicsEngine.addBall(b);
             renderer.addBall(b);
 
             row++;
@@ -124,18 +129,18 @@ public class Game implements BallPocketedListener, BallsCollisionListener, BallS
     // BallPocketedListener
     @Override
     public boolean onBallPocketed(Ball ball) {
-
         renderer.removeBall(ball);
         if (ball.getColor() == Color.WHITE) {
             foul = true;
             renderer.setFoulMessage("White ball got pocketed");
-            renderer.setActionMessage("Player "+player +" commited a foul, switching players.");
+            renderer.setActionMessage("Player " + player + " commited a foul, switching players.");
 
             Ball.WHITE.setPosition(Table.Constants.WIDTH * 0.25, 0);
             Ball.WHITE.getBody().setLinearVelocity(0, 0);
             renderer.addBall(Ball.WHITE);
 
         } else {
+            physicsEngine.removeBall(ball);
             scoreCounter++;
         }
         return true;
@@ -144,9 +149,11 @@ public class Game implements BallPocketedListener, BallsCollisionListener, BallS
     // BallsCollisionListener
     @Override
     public void onBallsCollide(Ball b1, Ball b2) {
-        System.out.println(b1 + " collided with " + b2);
-        if (b1 == Ball.WHITE || b2 == Ball.WHITE) {
-            foul = false;
+        if (player != 0) {
+            collisionDetected = true;
+            if (b1 == Ball.WHITE || b2 == Ball.WHITE) {
+                foul = false;
+            }
         }
     }
 
@@ -154,39 +161,50 @@ public class Game implements BallPocketedListener, BallsCollisionListener, BallS
     @Override
     public void onBallStrike(Ball ball) {
         if (player == 0) {
-            player = 2;
-        } else if (player == 1) {
-            player = 2;
-        } else if (player == 2) {
             player = 1;
         }
+        roundOver = false;
         if (ball.getColor() != Color.WHITE) {
             foul = true;
             renderer.setFoulMessage("FOUL: Wrong ball hit!");
         }
-        renderer.setStrikeMessage("Next strike: Player "+player);
     }
 
     // ObjectRestListener
     @Override
     public void onEndAllObjectsRest() {
-        if (foul) {
-            if (player == 1) {
-                scorePlayer1--;
-            } else if (player == 2){
-                scorePlayer2--;
+        if (!roundOver) {
+            if (!collisionDetected) {
+                foul = true;
+                renderer.setFoulMessage("White ball did not touch any object ball!");
+                renderer.setActionMessage("Player " + player + " commited a foul, switching players.");
             }
-            foul = false;
-        } else {
-            if (player == 1) {
-                scorePlayer1 += scoreCounter;
-            } else if (player == 2){
-                scorePlayer2 += scoreCounter;
+            if (foul) {
+                roundOver = true;
+                if (player == 1) {
+                    scorePlayer1--;
+                    player = 2;
+                } else if (player == 2) {
+                    scorePlayer2--;
+                    player = 1;
+                }
+                foul = false;
+            } else {
+                roundOver = true;
+                if (player == 1) {
+                    scorePlayer1 += scoreCounter;
+                    player = 2;
+                } else if (player == 2) {
+                    scorePlayer2 += scoreCounter;
+                    player = 1;
+                }
             }
+            collisionDetected = false;
+            scoreCounter = 0;
+            renderer.setStrikeMessage("Player " + player + "s turn");
+            renderer.setPlayer1Score(scorePlayer1);
+            renderer.setPlayer2Score(scorePlayer2);
         }
-
-        renderer.setPlayer1Score(scorePlayer1);
-        renderer.setPlayer2Score(scorePlayer2);
     }
 
     @Override
