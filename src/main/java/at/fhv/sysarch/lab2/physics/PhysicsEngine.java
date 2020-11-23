@@ -12,10 +12,8 @@ import org.dyn4j.dynamics.contact.PersistedContactPoint;
 import org.dyn4j.dynamics.contact.SolvedContactPoint;
 import org.dyn4j.geometry.Ray;
 import org.dyn4j.geometry.Vector2;
-
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Vector;
 
 public class PhysicsEngine implements StepListener, ContactListener, FrameListener {
     private World world;
@@ -72,9 +70,11 @@ public class PhysicsEngine implements StepListener, ContactListener, FrameListen
 
     @Override
     public boolean begin(ContactPoint point) {
+
         if (point.getBody1().getUserData() instanceof Ball && point.getBody2().getUserData() instanceof Ball) {
             Ball ball1 = (Ball) point.getBody1().getUserData();
             Ball ball2 = (Ball) point.getBody2().getUserData();
+
             ballsCollisionListener.onBallsCollide(ball1, ball2);
         }
 
@@ -92,18 +92,28 @@ public class PhysicsEngine implements StepListener, ContactListener, FrameListen
 
         if ((point.getBody1().getUserData() instanceof Ball && point.getFixture2().getUserData() == Table.TablePart.POCKET ||
                 point.getFixture1().getUserData() == Table.TablePart.POCKET && point.getBody2().getUserData() instanceof Ball)) {
-            Ball ball1;
-            ball1 = (Ball) point.getBody1().getUserData();
-            System.out.println("collide with pocket");
+            Ball ball;
+            if (point.getBody1().getUserData() instanceof Ball) {
+                ball = (Ball) point.getBody1().getUserData();
 
-            double deltaX = getDelta(ball1.getBody().getWorldCenter().x, point.getFixture2().getShape().getCenter().x);
-            double deltaY = getDelta(ball1.getBody().getWorldCenter().y, point.getFixture2().getShape().getCenter().y);
+                double deltaX = getDelta(ball.getBody().getWorldCenter().x, point.getFixture2().getShape().getCenter().x);
+                double deltaY = getDelta(ball.getBody().getWorldCenter().y, point.getFixture2().getShape().getCenter().y);
 
-            if (deltaX < point.getFixture2().getShape().getRadius() - 0.02 && deltaY < point.getFixture2().getShape().getRadius() - 0.02) {
-                ballPocketedListener.onBallPocketed(ball1);
-                return true;
+                if (deltaX < point.getFixture2().getShape().getRadius() - 0.02 && deltaY < point.getFixture2().getShape().getRadius() - 0.02) {
+                    ballPocketedListener.onBallPocketed(ball);
+                    return true;
+                }
+            } else {
+                ball = (Ball) point.getBody2().getUserData();
+
+                double deltaX = getDelta(ball.getBody().getWorldCenter().x, point.getFixture1().getShape().getCenter().x);
+                double deltaY = getDelta(ball.getBody().getWorldCenter().y, point.getFixture1().getShape().getCenter().y);
+
+                if (deltaX < point.getFixture1().getShape().getRadius() - 0.02 && deltaY < point.getFixture1().getShape().getRadius() - 0.02) {
+                    ballPocketedListener.onBallPocketed(ball);
+                    return true;
+                }
             }
-
         }
         return true;
     }
@@ -175,6 +185,5 @@ public class PhysicsEngine implements StepListener, ContactListener, FrameListen
                 ballStrikeListener.onBallStrike(ball);
             }
         }
-
     }
 }

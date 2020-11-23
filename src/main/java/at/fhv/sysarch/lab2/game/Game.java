@@ -15,8 +15,10 @@ import javafx.scene.paint.Color;
 public class Game implements BallPocketedListener, BallsCollisionListener, BallStrikeListener, ObjectsRestListener {
     private final Renderer renderer;
     private final PhysicsEngine physicsEngine;
+    private boolean foul = true;
     // starting state - 0, player1 - 1, player 2 - 2
     private int player = 0;
+    private int scoreCounter = 0;
     private int scorePlayer1 = 0;
     private int scorePlayer2 = 0;
 
@@ -125,26 +127,16 @@ public class Game implements BallPocketedListener, BallsCollisionListener, BallS
 
         renderer.removeBall(ball);
         if (ball.getColor() == Color.WHITE) {
+            foul = true;
             renderer.setFoulMessage("White ball got pocketed");
             renderer.setActionMessage("Player "+player +" commited a foul, switching players.");
-            if (player == 1) {
-                scorePlayer1--;
-            }
-            if (player == 2) {
-                scorePlayer2--;
-            }
+
             Ball.WHITE.setPosition(Table.Constants.WIDTH * 0.25, 0);
             Ball.WHITE.getBody().setLinearVelocity(0, 0);
             renderer.addBall(Ball.WHITE);
 
         } else {
-            if (player == 1) {
-                scorePlayer1++;
-            }
-
-            if (player == 2) {
-                scorePlayer2++;
-            }
+            scoreCounter++;
         }
         return true;
     }
@@ -153,32 +145,46 @@ public class Game implements BallPocketedListener, BallsCollisionListener, BallS
     @Override
     public void onBallsCollide(Ball b1, Ball b2) {
         System.out.println(b1 + " collided with " + b2);
+        if (b1 == Ball.WHITE || b2 == Ball.WHITE) {
+            foul = false;
+        }
     }
 
     // BallStrikeListener
     @Override
     public void onBallStrike(Ball ball) {
         if (player == 0) {
+            player = 2;
+        } else if (player == 1) {
+            player = 2;
+        } else if (player == 2) {
             player = 1;
         }
         if (ball.getColor() != Color.WHITE) {
+            foul = true;
             renderer.setFoulMessage("FOUL: Wrong ball hit!");
-            if (player == 1) {
-                scorePlayer1--;
-            } else if (player == 2) {
-                scorePlayer2--;
-            }
         }
+        renderer.setStrikeMessage("Next strike: Player "+player);
     }
 
     // ObjectRestListener
     @Override
     public void onEndAllObjectsRest() {
-        if (player == 0) {
-            renderer.setStrikeMessage("Next strike: Player 1");
+        if (foul) {
+            if (player == 1) {
+                scorePlayer1--;
+            } else if (player == 2){
+                scorePlayer2--;
+            }
+            foul = false;
         } else {
-            renderer.setStrikeMessage("Next strike: Player "+player);
+            if (player == 1) {
+                scorePlayer1 += scoreCounter;
+            } else if (player == 2){
+                scorePlayer2 += scoreCounter;
+            }
         }
+
         renderer.setPlayer1Score(scorePlayer1);
         renderer.setPlayer2Score(scorePlayer2);
     }
