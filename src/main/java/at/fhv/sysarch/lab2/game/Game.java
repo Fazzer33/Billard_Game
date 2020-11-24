@@ -2,6 +2,7 @@ package at.fhv.sysarch.lab2.game;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import at.fhv.sysarch.lab2.physics.BallPocketedListener;
@@ -11,6 +12,7 @@ import at.fhv.sysarch.lab2.physics.PhysicsEngine;
 import at.fhv.sysarch.lab2.rendering.Renderer;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import org.dyn4j.dynamics.Body;
 
 public class Game implements BallPocketedListener, BallsCollisionListener, BallStrikeListener, ObjectsRestListener {
     private final Renderer renderer;
@@ -23,6 +25,8 @@ public class Game implements BallPocketedListener, BallsCollisionListener, BallS
     private int scoreCounter = 0;
     private int scorePlayer1 = 0;
     private int scorePlayer2 = 0;
+
+    private List<Ball> allBalls = new ArrayList<>();
 
     private Cue cue;
 
@@ -83,6 +87,11 @@ public class Game implements BallPocketedListener, BallsCollisionListener, BallS
         double x0 = -Table.Constants.WIDTH * 0.25 - Ball.Constants.RADIUS;
 
         for (Ball b : balls) {
+            if (player != 0) {
+                if (row == 0 && col == 0){
+                    row=1;
+                }
+            }
             double y = y0 + (2 * Ball.Constants.RADIUS * row) + (col * Ball.Constants.RADIUS);
             double x = x0 + (2 * Ball.Constants.RADIUS * col);
 
@@ -99,20 +108,21 @@ public class Game implements BallPocketedListener, BallsCollisionListener, BallS
                 col++;
                 colSize--;
             }
+
         }
     }
 
     private void initWorld() {
-        List<Ball> balls = new ArrayList<>();
+        allBalls = new ArrayList<>();
 
         for (Ball b : Ball.values()) {
             if (b == Ball.WHITE)
                 continue;
 
-            balls.add(b);
+            allBalls.add(b);
         }
 
-        this.placeBalls(balls);
+        this.placeBalls(allBalls);
 
         Ball.WHITE.setPosition(Table.Constants.WIDTH * 0.25, 0);
 
@@ -204,11 +214,41 @@ public class Game implements BallPocketedListener, BallsCollisionListener, BallS
             renderer.setStrikeMessage("Player " + player + "s turn");
             renderer.setPlayer1Score(scorePlayer1);
             renderer.setPlayer2Score(scorePlayer2);
+            List<Body> bodies = physicsEngine.getWorld().getBodies();
+            List<Ball> balls = new LinkedList<>();
+            for (Body body :
+                    bodies) {
+                if (body.getUserData() instanceof Ball) {
+                    balls.add((Ball) body.getUserData());
+                }
+            }
+
+            if (balls.size() <= 2) {
+                for (Ball ball :
+                        balls) {
+                    removeBall(ball);
+                }
+                placeBalls(allBalls);
+                for (Ball ball :
+                        balls) {
+                    addBall(ball);
+                }
+            }
         }
+
     }
 
     @Override
     public void onStartAllObjectsRest() {
 
     }
+
+    public void addBall(Ball b) {
+        allBalls.add(b);
+    }
+
+    public void removeBall(Ball b) {
+        allBalls.remove(b);
+    }
+
 }

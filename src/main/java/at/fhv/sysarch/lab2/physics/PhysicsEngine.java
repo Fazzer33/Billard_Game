@@ -1,9 +1,6 @@
 package at.fhv.sysarch.lab2.physics;
 
-import at.fhv.sysarch.lab2.game.Ball;
-import at.fhv.sysarch.lab2.game.BallStrikeListener;
-import at.fhv.sysarch.lab2.game.Cue;
-import at.fhv.sysarch.lab2.game.Table;
+import at.fhv.sysarch.lab2.game.*;
 import at.fhv.sysarch.lab2.rendering.FrameListener;
 import org.dyn4j.dynamics.*;
 import org.dyn4j.dynamics.contact.ContactListener;
@@ -12,6 +9,8 @@ import org.dyn4j.dynamics.contact.PersistedContactPoint;
 import org.dyn4j.dynamics.contact.SolvedContactPoint;
 import org.dyn4j.geometry.Ray;
 import org.dyn4j.geometry.Vector2;
+
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -55,10 +54,7 @@ public class PhysicsEngine implements StepListener, ContactListener, FrameListen
         if (checkVelocityOnAll()) {
             objectsRestListener.onEndAllObjectsRest();
         }
-//        if (balls.size()<2){
-//            Ball ball = balls.get(0);
-//            System.out.println(ball.getColor());
-//        }
+
     }
 
     // Frame Listener
@@ -196,4 +192,5 @@ public class PhysicsEngine implements StepListener, ContactListener, FrameListen
     public void removeBall(Ball b) {
         balls.remove(b);
     }
+
 }
