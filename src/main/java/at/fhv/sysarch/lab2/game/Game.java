@@ -214,25 +214,30 @@ public class Game implements BallPocketedListener, BallsCollisionListener, BallS
             renderer.setStrikeMessage("Player " + player + "s turn");
             renderer.setPlayer1Score(scorePlayer1);
             renderer.setPlayer2Score(scorePlayer2);
-            List<Body> bodies = physicsEngine.getWorld().getBodies();
-            List<Ball> balls = new LinkedList<>();
-            for (Body body :
-                    bodies) {
-                if (body.getUserData() instanceof Ball) {
-                    balls.add((Ball) body.getUserData());
-                }
-            }
+            reloadBalls();
+        }
 
-            if (balls.size() <= 2) {
-                for (Ball ball :
-                        balls) {
-                    removeBall(ball);
-                }
-                placeBalls(allBalls);
-                for (Ball ball :
-                        balls) {
-                    addBall(ball);
-                }
+    }
+
+    private void reloadBalls() {
+        List<Body> bodies = physicsEngine.getWorld().getBodies();
+        List<Ball> balls = new LinkedList<>();
+        for (Body body :
+                bodies) {
+            if (body.getUserData() instanceof Ball) {
+                balls.add((Ball) body.getUserData());
+            }
+        }
+
+        if (balls.size() <= 2) {
+            for (Ball ball :
+                    balls) {
+                removeBall(ball);
+            }
+            placeBalls(allBalls);
+            for (Ball ball :
+                    balls) {
+                addBall(ball);
             }
         }
 
