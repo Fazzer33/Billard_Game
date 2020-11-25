@@ -13,6 +13,7 @@ import at.fhv.sysarch.lab2.rendering.Renderer;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import org.dyn4j.dynamics.Body;
+import org.dyn4j.geometry.Vector2;
 
 public class Game implements BallPocketedListener, BallsCollisionListener, BallStrikeListener, ObjectsRestListener {
     private final Renderer renderer;
@@ -25,6 +26,7 @@ public class Game implements BallPocketedListener, BallsCollisionListener, BallS
     private int scoreCounter = 0;
     private int scorePlayer1 = 0;
     private int scorePlayer2 = 0;
+    private Vector2 whiteBallPos;
 
     private List<Ball> allBalls = new ArrayList<>();
 
@@ -145,7 +147,7 @@ public class Game implements BallPocketedListener, BallsCollisionListener, BallS
             renderer.setFoulMessage("White ball got pocketed");
             renderer.setActionMessage("Player " + player + " commited a foul, switching players.");
 
-            Ball.WHITE.setPosition(Table.Constants.WIDTH * 0.25, 0);
+            Ball.WHITE.setPosition(whiteBallPos.x, whiteBallPos.y);
             Ball.WHITE.getBody().setLinearVelocity(0, 0);
             renderer.addBall(Ball.WHITE);
 
@@ -170,13 +172,17 @@ public class Game implements BallPocketedListener, BallsCollisionListener, BallS
     // BallStrikeListener
     @Override
     public void onBallStrike(Ball ball) {
+         whiteBallPos = Ball.WHITE.getBody().getWorldCenter();
+
         if (player == 0) {
             player = 1;
         }
         roundOver = false;
         if (ball.getColor() != Color.WHITE) {
             foul = true;
+            renderer.setActionMessage("Player " + player + " commited a foul, switching players.");
             renderer.setFoulMessage("FOUL: Wrong ball hit!");
+
         }
     }
 
@@ -201,12 +207,18 @@ public class Game implements BallPocketedListener, BallsCollisionListener, BallS
                 foul = false;
             } else {
                 roundOver = true;
-                if (player == 1) {
-                    scorePlayer1 += scoreCounter;
-                    player = 2;
-                } else if (player == 2) {
-                    scorePlayer2 += scoreCounter;
-                    player = 1;
+                if (scoreCounter!=0) {
+                    if (player == 1) {
+                        scorePlayer1 += scoreCounter;
+                    } else if (player == 2) {
+                        scorePlayer2 += scoreCounter;
+                    }
+                } else {
+                    if (player == 1) {
+                        player = 2;
+                    } else {
+                        player = 1;
+                    }
                 }
             }
             collisionDetected = false;
@@ -216,7 +228,6 @@ public class Game implements BallPocketedListener, BallsCollisionListener, BallS
             renderer.setPlayer2Score(scorePlayer2);
             reloadBalls();
         }
-
     }
 
     private void reloadBalls() {
