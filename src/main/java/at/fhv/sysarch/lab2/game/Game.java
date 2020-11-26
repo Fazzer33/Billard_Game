@@ -208,19 +208,7 @@ public class Game implements BallPocketedListener, BallsCollisionListener, BallS
                 foul = false;
             } else {
                 roundOver = true;
-                if (scoreCounter != 0) {
-                    if (player == 1) {
-                        scorePlayer1 += scoreCounter;
-                    } else if (player == 2) {
-                        scorePlayer2 += scoreCounter;
-                    }
-                } else {
-                    if (player == 1) {
-                        player = 2;
-                    } else {
-                        player = 1;
-                    }
-                }
+                setScore();
             }
             collisionDetected = false;
             scoreCounter = 0;
