@@ -21,6 +21,7 @@ public class Game implements BallPocketedListener, BallsCollisionListener, BallS
     private boolean foul = false;
     private boolean roundOver = true;
     private boolean collisionDetected = false;
+    private boolean allObjectsRest = true;
     // starting state - 0, player1 - 1, player 2 - 2
     private int player = 0;
     private int scoreCounter = 0;
@@ -39,43 +40,45 @@ public class Game implements BallPocketedListener, BallsCollisionListener, BallS
     }
 
     public void onMousePressed(MouseEvent e) {
-        double x = e.getX();
-        double y = e.getY();
+        if (allObjectsRest) {
+            double x = e.getX();
+            double y = e.getY();
 
-        double pX = this.renderer.screenToPhysicsX(x);
-        double pY = this.renderer.screenToPhysicsY(y);
+            double pX = this.renderer.screenToPhysicsX(x);
+            double pY = this.renderer.screenToPhysicsY(y);
 
-//        System.out.println(pX);
-//        System.out.println(pY);
-
-        cue.setStartX(pX);
-        cue.setStartY(pY);
-        cue.setEndY(pY);
-        cue.setEndX(pX);
-        cue.setIsDragged();
+            cue.setStartX(pX);
+            cue.setStartY(pY);
+            cue.setEndY(pY);
+            cue.setEndX(pX);
+            cue.setIsDragged();
+        }
     }
 
     public void onMouseReleased(MouseEvent e) {
-        cue.setIsDragged();
-        physicsEngine.rayCast();
+        if (allObjectsRest) {
+            cue.setIsDragged();
+            physicsEngine.rayCast();
+            allObjectsRest = false;
+        }
+
     }
 
 
     public void setOnMouseDragged(MouseEvent e) {
-        double x = e.getX();
-        double y = e.getY();
+        if (allObjectsRest) {
+            double x = e.getX();
+            double y = e.getY();
 
 
         double pX = renderer.screenToPhysicsX(x);
         double pY = renderer.screenToPhysicsY(y);
 
-//        System.out.println(pX);
-//        System.out.println(pY);
-
-        cue.setEndX(pX);
-        cue.setEndY(pY);
-        renderer.setActionMessage("");
-        renderer.setFoulMessage("");
+            cue.setEndX(pX);
+            cue.setEndY(pY);
+            renderer.setActionMessage("");
+            renderer.setFoulMessage("");
+        }
     }
 
     private void placeBalls(List<Ball> balls) {
@@ -190,6 +193,7 @@ public class Game implements BallPocketedListener, BallsCollisionListener, BallS
     // ObjectRestListener
     @Override
     public void onEndAllObjectsRest() {
+        allObjectsRest = true;
         if (!roundOver) {
             if (!collisionDetected) {
                 foul = true;
