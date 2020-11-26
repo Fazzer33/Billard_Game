@@ -21,7 +21,6 @@ public class Game implements BallPocketedListener, BallsCollisionListener, BallS
     private boolean foul = false;
     private boolean roundOver = true;
     private boolean collisionDetected = false;
-    private boolean allObjectsRest = true;
     // starting state - 0, player1 - 1, player 2 - 2
     private int player = 0;
     private int scoreCounter = 0;
@@ -55,9 +54,8 @@ public class Game implements BallPocketedListener, BallsCollisionListener, BallS
 
     public void onMouseReleased(MouseEvent e) {
         cue.setIsDragged();
-        if (allObjectsRest) {
+        if (roundOver) {
             physicsEngine.rayCast();
-            allObjectsRest = false;
         }
 
     }
@@ -189,7 +187,6 @@ public class Game implements BallPocketedListener, BallsCollisionListener, BallS
     // ObjectRestListener
     @Override
     public void onEndAllObjectsRest() {
-        allObjectsRest = true;
         if (!roundOver) {
             if (!collisionDetected) {
                 foul = true;
