@@ -40,24 +40,22 @@ public class Game implements BallPocketedListener, BallsCollisionListener, BallS
     }
 
     public void onMousePressed(MouseEvent e) {
-        if (allObjectsRest) {
-            double x = e.getX();
-            double y = e.getY();
+        cue.setIsDragged();
+        double x = e.getX();
+        double y = e.getY();
 
-            double pX = this.renderer.screenToPhysicsX(x);
-            double pY = this.renderer.screenToPhysicsY(y);
+        double pX = this.renderer.screenToPhysicsX(x);
+        double pY = this.renderer.screenToPhysicsY(y);
 
-            cue.setStartX(pX);
-            cue.setStartY(pY);
-            cue.setEndY(pY);
-            cue.setEndX(pX);
-            cue.setIsDragged();
-        }
+        cue.setStartX(pX);
+        cue.setStartY(pY);
+        cue.setEndY(pY);
+        cue.setEndX(pX);
     }
 
     public void onMouseReleased(MouseEvent e) {
+        cue.setIsDragged();
         if (allObjectsRest) {
-            cue.setIsDragged();
             physicsEngine.rayCast();
             allObjectsRest = false;
         }
@@ -66,19 +64,17 @@ public class Game implements BallPocketedListener, BallsCollisionListener, BallS
 
 
     public void setOnMouseDragged(MouseEvent e) {
-        if (allObjectsRest) {
-            double x = e.getX();
-            double y = e.getY();
+        double x = e.getX();
+        double y = e.getY();
 
 
         double pX = renderer.screenToPhysicsX(x);
         double pY = renderer.screenToPhysicsY(y);
 
-            cue.setEndX(pX);
-            cue.setEndY(pY);
-            renderer.setActionMessage("");
-            renderer.setFoulMessage("");
-        }
+        cue.setEndX(pX);
+        cue.setEndY(pY);
+        renderer.setActionMessage("");
+        renderer.setFoulMessage("");
     }
 
     private void placeBalls(List<Ball> balls) {
@@ -93,7 +89,7 @@ public class Game implements BallPocketedListener, BallsCollisionListener, BallS
         double x0 = -Table.Constants.WIDTH * 0.25 - Ball.Constants.RADIUS;
 
         for (Ball b : balls) {
-            if (player != 0 && balls.size()<15) {
+            if (player != 0 && balls.size() < 15) {
                 if (row == 0 && col == 0) {
                     row = 1;
                 }
