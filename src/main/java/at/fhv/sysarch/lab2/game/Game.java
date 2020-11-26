@@ -60,6 +60,7 @@ public class Game implements BallPocketedListener, BallsCollisionListener, BallS
         physicsEngine.rayCast();
     }
 
+
     public void setOnMouseDragged(MouseEvent e) {
         double x = e.getX();
         double y = e.getY();
@@ -89,9 +90,9 @@ public class Game implements BallPocketedListener, BallsCollisionListener, BallS
         double x0 = -Table.Constants.WIDTH * 0.25 - Ball.Constants.RADIUS;
 
         for (Ball b : balls) {
-            if (player != 0) {
-                if (row == 0 && col == 0){
-                    row=1;
+            if (player != 0 && balls.size()<15) {
+                if (row == 0 && col == 0) {
+                    row = 1;
                 }
             }
             double y = y0 + (2 * Ball.Constants.RADIUS * row) + (col * Ball.Constants.RADIUS);
@@ -172,7 +173,7 @@ public class Game implements BallPocketedListener, BallsCollisionListener, BallS
     // BallStrikeListener
     @Override
     public void onBallStrike(Ball ball) {
-         whiteBallPos = Ball.WHITE.getBody().getWorldCenter();
+        whiteBallPos = Ball.WHITE.getBody().getWorldCenter();
 
         if (player == 0) {
             player = 1;
@@ -207,7 +208,7 @@ public class Game implements BallPocketedListener, BallsCollisionListener, BallS
                 foul = false;
             } else {
                 roundOver = true;
-                if (scoreCounter!=0) {
+                if (scoreCounter != 0) {
                     if (player == 1) {
                         scorePlayer1 += scoreCounter;
                     } else if (player == 2) {
