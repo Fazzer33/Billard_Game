@@ -65,7 +65,6 @@ public class Game implements BallPocketedListener, BallsCollisionListener, BallS
         double x = e.getX();
         double y = e.getY();
 
-
         double pX = renderer.screenToPhysicsX(x);
         double pY = renderer.screenToPhysicsY(y);
 
@@ -195,13 +194,7 @@ public class Game implements BallPocketedListener, BallsCollisionListener, BallS
             }
             if (foul) {
                 roundOver = true;
-                if (player == 1) {
-                    scorePlayer1--;
-                    player = 2;
-                } else if (player == 2) {
-                    scorePlayer2--;
-                    player = 1;
-                }
+                setScoreOnFoul();
                 foul = false;
             } else {
                 roundOver = true;
@@ -216,6 +209,9 @@ public class Game implements BallPocketedListener, BallsCollisionListener, BallS
         }
     }
 
+    /**
+     * Reloads balls when there are only two or less balls on the table
+     */
     private void reloadBalls() {
         List<Body> bodies = physicsEngine.getWorld().getBodies();
         List<Ball> balls = new LinkedList<>();
@@ -252,4 +248,29 @@ public class Game implements BallPocketedListener, BallsCollisionListener, BallS
         allBalls.remove(b);
     }
 
+    public void setScoreOnFoul() {
+        if (player == 1) {
+            scorePlayer1--;
+            player = 2;
+        } else if (player == 2) {
+            scorePlayer2--;
+            player = 1;
+        }
+    }
+
+    public void setScore() {
+        if (scoreCounter != 0) {
+            if (player == 1) {
+                scorePlayer1 += scoreCounter;
+            } else if (player == 2) {
+                scorePlayer2 += scoreCounter;
+            }
+        } else {
+            if (player == 1) {
+                player = 2;
+            } else {
+                player = 1;
+            }
+        }
+    }
 }

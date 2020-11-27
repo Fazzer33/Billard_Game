@@ -9,8 +9,6 @@ import org.dyn4j.dynamics.contact.PersistedContactPoint;
 import org.dyn4j.dynamics.contact.SolvedContactPoint;
 import org.dyn4j.geometry.Ray;
 import org.dyn4j.geometry.Vector2;
-
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -34,7 +32,6 @@ public class PhysicsEngine implements StepListener, ContactListener, FrameListen
     @Override
     public void begin(Step step, World world) {
 
-
     }
 
     @Override
@@ -45,16 +42,13 @@ public class PhysicsEngine implements StepListener, ContactListener, FrameListen
     @Override
     public void postSolve(Step step, World world) {
 
-
     }
 
     @Override
     public void end(Step step, World world) {
-        // alle bodies von der world holen und überprüfen ob sie sich noch bewegen
         if (checkVelocityOnAll()) {
             objectsRestListener.onEndAllObjectsRest();
         }
-
     }
 
     // Frame Listener
@@ -168,6 +162,9 @@ public class PhysicsEngine implements StepListener, ContactListener, FrameListen
         this.cue = cue;
     }
 
+    /**
+     * Performs a raycast and applies the force to the ball hit by the cue.
+     */
     public void rayCast() {
         List<RaycastResult> raycastResults = new LinkedList<>();
         Ray ray = new Ray(new Vector2(cue.getStartX(), cue.getStartY()),

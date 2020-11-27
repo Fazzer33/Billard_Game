@@ -242,7 +242,6 @@ public class Renderer extends AnimationTimer {
     }
 
     private void drawCue() {
-        // TODO: draw cue
         if(cue.cueIsDragged()) {
             this.gc.setStroke(Color.BLACK);
             this.gc.setLineWidth(7);
