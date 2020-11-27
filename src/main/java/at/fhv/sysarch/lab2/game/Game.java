@@ -159,8 +159,8 @@ public class Game implements BallPocketedListener, BallsCollisionListener, BallS
     @Override
     public void onBallsCollide(Ball b1, Ball b2) {
         if (player != 0) {
-            collisionDetected = true;
             if (b1 == Ball.WHITE || b2 == Ball.WHITE) {
+                collisionDetected = true;
                 foul = false;
             }
         }
@@ -188,14 +188,12 @@ public class Game implements BallPocketedListener, BallsCollisionListener, BallS
     public void onEndAllObjectsRest() {
         if (!roundOver) {
             if (!collisionDetected) {
-                foul = true;
                 renderer.setFoulMessage("White ball did not touch any object ball!");
                 renderer.setActionMessage("Player " + player + " commited a foul, switching players.");
             }
             if (foul) {
                 roundOver = true;
                 setScoreOnFoul();
-                foul = false;
             } else {
                 roundOver = true;
                 setScore();
@@ -207,6 +205,7 @@ public class Game implements BallPocketedListener, BallsCollisionListener, BallS
             renderer.setPlayer2Score(scorePlayer2);
             reloadBalls();
         }
+        foul = false;
     }
 
     /**
@@ -237,7 +236,6 @@ public class Game implements BallPocketedListener, BallsCollisionListener, BallS
 
     @Override
     public void onStartAllObjectsRest() {
-
     }
 
     public void addBall(Ball b) {

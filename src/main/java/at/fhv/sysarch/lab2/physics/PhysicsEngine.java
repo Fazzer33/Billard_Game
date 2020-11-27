@@ -9,6 +9,7 @@ import org.dyn4j.dynamics.contact.PersistedContactPoint;
 import org.dyn4j.dynamics.contact.SolvedContactPoint;
 import org.dyn4j.geometry.Ray;
 import org.dyn4j.geometry.Vector2;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -60,30 +61,29 @@ public class PhysicsEngine implements StepListener, ContactListener, FrameListen
     // Contact Listener
     @Override
     public void sensed(ContactPoint point) {
+
     }
 
     @Override
     public boolean begin(ContactPoint point) {
+        return true;
+    }
 
+    @Override
+    public void end(ContactPoint point) {
+    }
+
+    @Override
+    public boolean persist(PersistedContactPoint point) {
         if (point.getBody1().getUserData() instanceof Ball && point.getBody2().getUserData() instanceof Ball) {
             Ball ball1 = (Ball) point.getBody1().getUserData();
             Ball ball2 = (Ball) point.getBody2().getUserData();
             ballsCollisionListener.onBallsCollide(ball1, ball2);
         }
 
-        return true;
-    }
-
-    @Override
-    public void end(ContactPoint point) {
-
-    }
-
-    @Override
-    public boolean persist(PersistedContactPoint point) {
-
         if ((point.getBody1().getUserData() instanceof Ball && point.getFixture2().getUserData() == Table.TablePart.POCKET ||
                 point.getFixture1().getUserData() == Table.TablePart.POCKET && point.getBody2().getUserData() instanceof Ball)) {
+
             Ball ball;
             if (point.getBody1().getUserData() instanceof Ball) {
                 ball = (Ball) point.getBody1().getUserData();
@@ -170,13 +170,13 @@ public class PhysicsEngine implements StepListener, ContactListener, FrameListen
         Ray ray = new Ray(new Vector2(cue.getStartX(), cue.getStartY()),
                 new Vector2(cue.getStartX() - cue.getEndX(), cue.getStartY() - cue.getEndY()));
         world.raycast(ray, 0.05, true, false, raycastResults);
-        if(raycastResults.size() == 1){
+        if (raycastResults.size() == 1) {
             RaycastResult result = raycastResults.get(0);
-            if(result.getBody().getUserData() instanceof Ball) {
+            if (result.getBody().getUserData() instanceof Ball) {
                 Ball ball = (Ball) result.getBody().getUserData();
                 Vector2 strikePoint = result.getRaycast().getPoint();
                 Vector2 force = new Vector2(cue.getStartX() - cue.getEndX(), cue.getStartY() - cue.getEndY());
-                ball.getBody().applyForce(new Vector2(force.x*420, force.y*420), strikePoint);
+                ball.getBody().applyForce(new Vector2(force.x * 420, force.y * 420), strikePoint);
                 ballStrikeListener.onBallStrike(ball);
             }
         }
