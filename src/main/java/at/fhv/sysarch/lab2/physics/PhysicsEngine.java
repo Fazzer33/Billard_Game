@@ -9,7 +9,6 @@ import org.dyn4j.dynamics.contact.PersistedContactPoint;
 import org.dyn4j.dynamics.contact.SolvedContactPoint;
 import org.dyn4j.geometry.Ray;
 import org.dyn4j.geometry.Vector2;
-
 import java.util.LinkedList;
 import java.util.List;
 
@@ -75,16 +74,15 @@ public class PhysicsEngine implements StepListener, ContactListener, FrameListen
 
     @Override
     public boolean persist(PersistedContactPoint point) {
-        if (point.getBody1().getUserData() instanceof Ball && point.getBody2().getUserData() instanceof Ball) {
-            Ball ball1 = (Ball) point.getBody1().getUserData();
-            Ball ball2 = (Ball) point.getBody2().getUserData();
-            ballsCollisionListener.onBallsCollide(ball1, ball2);
-        }
+        checkOnBallCollision(point);
 
+        // Check if ball gets pocketed
         if ((point.getBody1().getUserData() instanceof Ball && point.getFixture2().getUserData() == Table.TablePart.POCKET ||
                 point.getFixture1().getUserData() == Table.TablePart.POCKET && point.getBody2().getUserData() instanceof Ball)) {
 
             Ball ball;
+            // Compare the position of the ball and the pocket
+            // if it is in the defined area the Game gets informed to pocket the ball.
             if (point.getBody1().getUserData() instanceof Ball) {
                 ball = (Ball) point.getBody1().getUserData();
 
@@ -148,6 +146,9 @@ public class PhysicsEngine implements StepListener, ContactListener, FrameListen
         }
     }
 
+    /**
+     * Checks if all bodies are resting.
+     */
     public boolean checkVelocityOnAll() {
         boolean rest = true;
         for (Body body : this.world.getBodies()) {
@@ -167,18 +168,23 @@ public class PhysicsEngine implements StepListener, ContactListener, FrameListen
      */
     public void rayCast() {
         List<RaycastResult> raycastResults = new LinkedList<>();
-        Ray ray = new Ray(new Vector2(cue.getStartX(), cue.getStartY()),
-                new Vector2(cue.getStartX() - cue.getEndX(), cue.getStartY() - cue.getEndY()));
-        world.raycast(ray, 0.05, true, false, raycastResults);
-        if (raycastResults.size() == 1) {
-            RaycastResult result = raycastResults.get(0);
-            if (result.getBody().getUserData() instanceof Ball) {
-                Ball ball = (Ball) result.getBody().getUserData();
-                Vector2 strikePoint = result.getRaycast().getPoint();
-                Vector2 force = new Vector2(cue.getStartX() - cue.getEndX(), cue.getStartY() - cue.getEndY());
-                ball.getBody().applyForce(new Vector2(force.x * 420, force.y * 420), strikePoint);
-                ballStrikeListener.onBallStrike(ball);
+        try {
+            Ray ray = new Ray(new Vector2(cue.getStartX(), cue.getStartY()),
+                    new Vector2(cue.getStartX() - cue.getEndX(), cue.getStartY() - cue.getEndY()));
+            // Increase maxLength if you want to strike the ball from further away
+            world.raycast(ray, 0.05, true, false, raycastResults);
+            if (raycastResults.size() == 1) {
+                RaycastResult result = raycastResults.get(0);
+                if (result.getBody().getUserData() instanceof Ball) {
+                    Ball ball = (Ball) result.getBody().getUserData();
+                    Vector2 strikePoint = result.getRaycast().getPoint();
+                    Vector2 force = new Vector2(cue.getStartX() - cue.getEndX(), cue.getStartY() - cue.getEndY());
+                    ball.getBody().applyForce(new Vector2(force.x * 420, force.y * 420), strikePoint);
+                    ballStrikeListener.onBallStrike(ball);
+                }
             }
+        } catch (Exception e) {
+            System.out.println("Ray has no direction, because cue has no start and end point");
         }
     }
 
@@ -188,6 +194,18 @@ public class PhysicsEngine implements StepListener, ContactListener, FrameListen
 
     public void removeBall(Ball b) {
         balls.remove(b);
+    }
+
+    /**
+     * Checks if both collided bodies are balls to carry out further operations
+     * @param point the ContactPoint on which both bodies collide
+     */
+    public void checkOnBallCollision(PersistedContactPoint point) {
+        if (point.getBody1().getUserData() instanceof Ball && point.getBody2().getUserData() instanceof Ball) {
+            Ball ball1 = (Ball) point.getBody1().getUserData();
+            Ball ball2 = (Ball) point.getBody2().getUserData();
+            ballsCollisionListener.onBallsCollide(ball1, ball2);
+        }
     }
 
 }

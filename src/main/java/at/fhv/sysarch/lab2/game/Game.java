@@ -135,7 +135,12 @@ public class Game implements BallPocketedListener, BallsCollisionListener, BallS
         renderer.setStrikeMessage("Player 1s turn");
     }
 
-    // BallPocketedListener
+    /**
+     * Checks if the ball was White or another color.
+     * White Color gets removed and replaced on the last position before striking and foul is marked.
+     * All other Colors only get removed and increase the scoreCount
+     * @param ball Ball which got pocketed.
+     */
     @Override
     public boolean onBallPocketed(Ball ball) {
         renderer.removeBall(ball);
@@ -155,7 +160,10 @@ public class Game implements BallPocketedListener, BallsCollisionListener, BallS
         return true;
     }
 
-    // BallsCollisionListener
+    /**
+     * Checks if one of both balls is the white one, to detect if
+     * the white ball has hit any other ball.
+     */
     @Override
     public void onBallsCollide(Ball b1, Ball b2) {
         if (player != 0) {
@@ -166,6 +174,11 @@ public class Game implements BallPocketedListener, BallsCollisionListener, BallS
         }
     }
 
+    /**
+     * Saves the position of the white ball before striking.
+     * Also marks a foul and informs the renderer to print foul messages.
+     * @param ball
+     */
     // BallStrikeListener
     @Override
     public void onBallStrike(Ball ball) {
@@ -183,6 +196,9 @@ public class Game implements BallPocketedListener, BallsCollisionListener, BallS
         }
     }
 
+    /**
+     * Checks if any fouls were made and then sets the score of the player.
+     */
     // ObjectRestListener
     @Override
     public void onEndAllObjectsRest() {
