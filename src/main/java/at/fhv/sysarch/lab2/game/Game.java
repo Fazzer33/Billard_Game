@@ -237,7 +237,6 @@ public class Game implements BallPocketedListener, BallsCollisionListener, BallS
                 addBall(ball);
             }
         }
-
     }
 
     @Override
